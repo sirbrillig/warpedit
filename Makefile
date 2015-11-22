@@ -2,6 +2,10 @@ WATCHIFY = ./node_modules/.bin/watchify
 BROWSERIFY = ./node_modules/.bin/browserify
 NPM = npm
 NODE ?= node
+SRC_JS = src/index.js
+BUNDLE_JS = public/js/bundle.js
+BABELIFY_PLUGIN = [ babelify --presets [ react ] ]
+BUNDLE_CSS = public/styles/bundle.css
 
 run: npm install webserver watchify
 
@@ -20,11 +24,11 @@ install:
 
 build:
 	@echo "Running Browserify on your files..."
-	@$(BROWSERIFY) src/index.js -t babelify -o public/js/bundle.js
+	@$(BROWSERIFY) $(SRC_JS) -t $(BABELIFY_PLUGIN) -o $(BUNDLE_JS) -p [ parcelify -o $(BUNDLE_CSS) ]
 	@echo "All done!"
 
 watchify:
 	@echo "Running Browserify on your files and watching for changes... (Press CTRL-C to stop)"
-	@$(WATCHIFY) --verbose -o public/js/bundle.js -- src/index.js
+	@$(WATCHIFY) $(SRC_JS) --verbose -t $(BABELIFY_PLUGIN) -o $(BUNDLE_JS) -p [ parcelify -wo $(BUNDLE_CSS) ]
 
 .PHONY: build run watchify build install npm
