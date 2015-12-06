@@ -21,6 +21,10 @@ export default React.createClass( {
 		this.updateFrameContent( this.props.markup );
 	},
 
+	componentDidUpdate() {
+		this.updateFrameContent( this.props.markup );
+	},
+
 	updateFrameContent( content ) {
 		debug( 'adding content to iframe' );
 		this.iframe.addEventListener( 'load', this.attachClickHandlers );
@@ -31,16 +35,12 @@ export default React.createClass( {
 
 	attachClickHandlers() {
 		const clickableElements = Array.prototype.slice.call( this.iframe.contentDocument.querySelectorAll( this.props.clickableClassName ) );
-		if ( ! clickableElements ) {
-			debug( 'no clickable elements found' );
-			return;
-		}
 		debug( 'attaching click handlers to', clickableElements.length, 'elements' );
 		clickableElements.map( this.attachClickHandler );
 	},
 
 	attachClickHandler( element ) {
-		debug( 'attaching to', element );
+		debug( 'attaching click handler to', element );
 		element.onclick = this.handleClick;
 	},
 
