@@ -3,6 +3,6 @@ import ReactDOM from 'react-dom';
 import Preview from './preview';
 
 ReactDOM.render(
-	<Preview url="https://testcopysite.wordpress.com/" />,
+	<Preview markup="<b class='warpedit-clickable'>hi</b>" />,
 	document.getElementById( 'content' )
 );
