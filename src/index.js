@@ -1,7 +1,8 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Preview from './preview';
 
 ReactDOM.render(
-  <h1>Hello, world!</h1>,
-  document.getElementById( 'example' )
+	<Preview url="https://testcopysite.wordpress.com/" />,
+	document.getElementById( 'content' )
 );
