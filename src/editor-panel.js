@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import debugFactory from 'debug';
+import noop from 'lodash.noop';
 
 const debug = debugFactory( 'warpedit:editor-panel' );
 
@@ -9,14 +10,16 @@ export default React.createClass( {
 	displayName: 'EditorPanel',
 
 	propTypes: {
-		editableContent: React.PropTypes.string,
-		active: React.PropTypes.bool
+		content: React.PropTypes.string,
+		active: React.PropTypes.bool,
+		onChange: React.PropTypes.func,
 	},
 
 	getDefaultProps() {
 		return {
 			content: '',
-			active: false
+			active: false,
+			onChange: noop,
 		}
 	},
 
@@ -38,7 +41,10 @@ export default React.createClass( {
 	},
 
 	handleChange( event ) {
-		this.setState( { content: event.target.value } );
+		const newContent = event.target.value;
+		this.setState( { content: newContent }, () => {
+			this.props.onChange( newContent );
+		} );
 	},
 
 	render() {
