@@ -1,5 +1,6 @@
 import React from 'react';
 import debugFactory from 'debug';
+import noop from 'lodash.noop';
 
 const debug = debugFactory( 'warpedit:preview' );
 
@@ -8,12 +9,14 @@ export default React.createClass( {
 
 	propTypes: {
 		markup: React.PropTypes.string.isRequired,
-		clickableClassName: React.PropTypes.string
+		clickableClassName: React.PropTypes.string,
+		onClick: React.PropTypes.func,
 	},
 
 	getDefaultProps() {
 		return {
-			clickableClassName: '.warpedit-clickable'
+			clickableClassName: '.warpedit-clickable',
+			onClick: noop,
 		};
 	},
 
@@ -45,7 +48,8 @@ export default React.createClass( {
 	},
 
 	handleClick( event ) {
-		debug( 'clicked', event );
+		debug( 'click detected:', event );
+		this.props.onClick( event );
 	},
 
 	render() {
