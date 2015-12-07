@@ -37,7 +37,7 @@ export default React.createClass( {
 		return (
 			<div>
 				<EditorPanel active={ this.state.editorActive } content={ this.state.editableContent }/>
-				<Preview markup="<b class='warpedit-clickable'>hi</b>" onClick={ this.handleClick }/>
+				<Preview markup="Hello, <span class='warpedit-clickable'>human</span>.<br/><span class='warpedit-clickable'>I hope your day is going well!</span>" onClick={ this.handleClick }/>
 			</div>
 		);
 	}
