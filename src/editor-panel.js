@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import debugFactory from 'debug';
 
@@ -30,6 +31,12 @@ export default React.createClass( {
 		this.setState( { content: nextProps.content } );
 	},
 
+	componentDidUpdate() {
+		if ( this.props.active ) {
+			ReactDOM.findDOMNode( this.editField ).focus();
+		}
+	},
+
 	handleChange( event ) {
 		this.setState( { content: event.target.value } );
 	},
@@ -38,7 +45,7 @@ export default React.createClass( {
 		const classes = classNames( 'warpedit-editor-panel', { 'is-active': this.props.active } );
 		return (
 			<div className={ classes }>
-				<textarea rows="10" cols="80" onChange={ this.handleChange } value={ this.state.content }/>
+				<textarea rows="10" cols="80" onChange={ this.handleChange } value={ this.state.content } ref={ ( input ) => this.editField = input }/>
 			</div>
 		);
 	}
