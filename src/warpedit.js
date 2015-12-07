@@ -5,6 +5,7 @@ import debugFactory from 'debug';
 import store from './store';
 import Preview from './preview';
 import EditorPanel from './editor-panel';
+import MenuBar from './menu-bar';
 
 const debug = debugFactory( 'warpedit:warpedit' );
 
@@ -36,6 +37,7 @@ export default React.createClass( {
 	render() {
 		return (
 			<div>
+				<MenuBar editorActive={ this.state.editorActive }/>
 				<EditorPanel active={ this.state.editorActive } content={ this.state.editableContent }/>
 				<Preview markup="Hello, <span class='warpedit-clickable'>human</span>.<br/><span class='warpedit-clickable'>I hope your day is going well!</span>" onClick={ this.handleClick }/>
 			</div>

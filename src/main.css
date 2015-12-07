@@ -19,13 +19,48 @@ body {
 	transition: all 300ms ease-in-out;
 	max-height: 0;
 	overflow: hidden;
+	border-bottom: 1px solid #FFC107;
 }
 
 .warpedit-editor-panel textarea {
 	width: 100%;
 	height: 100%;
+	border: none;
 }
 
 .warpedit-editor-panel.is-active {
 	max-height: 300px;
+}
+
+.warpedit-menu-bar {
+	height: 42px;
+	background-color: #FFC107;
+}
+
+.warpedit-menu-bar button {
+	float: right;
+	margin-right: 10px;
+	margin-top:4px;
+}
+
+.btn {
+	-webkit-border-radius: 10;
+	-moz-border-radius: 10;
+	border-radius: 10px;
+	border: none;
+	color: #ffffff;
+	font-size: 12px;
+	background: #3498db;
+	padding: 10px 20px 10px 20px;
+	text-decoration: none;
+}
+
+.btn:hover {
+	background: #3cb0fd;
+	background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+	background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+	background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+	background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+	background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+	text-decoration: none;
 }
