@@ -14,4 +14,18 @@ body {
 }
 
 .warpedit-editor-panel {
+	padding: 0;
+	margin: 0;
+	transition: all 300ms ease-in-out;
+	max-height: 0;
+	overflow: hidden;
+}
+
+.warpedit-editor-panel textarea {
+	width: 100%;
+	height: 100%;
+}
+
+.warpedit-editor-panel.is-active {
+	max-height: 300px;
 }
