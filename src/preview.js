@@ -14,17 +14,21 @@ export default React.createClass( {
 	propTypes: {
 		markup: React.PropTypes.string.isRequired,
 		clickableClassName: React.PropTypes.string,
+		getMarkupClassName: React.PropTypes.string,
 		editableElements: React.PropTypes.object,
 		onClick: React.PropTypes.func,
 		addClickableElement: React.PropTypes.func,
+		onMarkupChange: React.PropTypes.func,
 	},
 
 	getDefaultProps() {
 		return {
 			clickableClassName: '.warpedit-clickable',
+			getMarkupClassName: 'body',
 			editableElements: {},
 			onClick: noop,
 			addClickableElement: noop,
+			onMarkupChange: noop,
 		};
 	},
 
@@ -41,16 +45,26 @@ export default React.createClass( {
 	},
 
 	componentWillReceiveProps( nextProps ) {
+		if ( ! Object.keys( nextProps.editableElements ).some( elementKey => this.didFrameElementChange( elementKey, nextProps.editableElements[ elementKey ] ) ) ) return;
 		this.updateEditableElements( nextProps.editableElements );
 	},
 
+	getMarkup() {
+		const markup = this.iframe.contentDocument.querySelector( this.props.getMarkupClassName );
+		return markup.innerHTML;
+	},
+
 	updateEditableElements( editableElements ) {
-		Object.keys( editableElements ).map( elementKey => {
-			this.updateFrameElement( elementKey, editableElements[ elementKey ] );
-		} );
+		Object.keys( editableElements ).map( elementKey => this.updateFrameElement( elementKey, editableElements[ elementKey ] ) );
+		this.props.onMarkupChange( this.getMarkup() );
+	},
+
+	didFrameElementChange( elementKey, content ) {
+		return ( clickableElements[ elementKey ].innerHTML !== content );
 	},
 
 	updateFrameElement( elementKey, content ) {
+		if ( ! this.didFrameElementChange( elementKey, content ) ) return;
 		debug( 'updating frame element', elementKey );
 		clickableElements[ elementKey ].innerHTML = content;
 	},

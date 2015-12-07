@@ -8,6 +8,7 @@ const initialState = {
 	editingKey: '',
 	editingContent: '',
 	editableElements: {},
+	markup: '',
 };
 
 function updateObject( object, key, value ) {
@@ -33,6 +34,11 @@ export default createStore( ( state = initialState, action ) => {
 		case 'ADD_EDITABLE_ELEMENT':
 			debug( 'adding editable element content', action.elementKey );
 			return Object.assign( {}, state, { editableElements: updateObject( state.editableElements, action.elementKey, action.content ) } );
+			break;
+
+		case 'UPDATE_MARKUP':
+			debug( 'markup changed' );
+			return Object.assign( {}, state, { markup: action.markup } );
 			break;
 	}
 	return state;

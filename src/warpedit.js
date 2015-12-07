@@ -40,6 +40,10 @@ export default React.createClass( {
 		store.dispatch( { type: 'ADD_EDITABLE_ELEMENT', elementKey, content: element.innerHTML } );
 	},
 
+	handleMarkupChange( newMarkup ) {
+		store.dispatch( { type: 'UPDATE_MARKUP', markup: newMarkup } );
+	},
+
 	onEditChange( newContent ) {
 		store.dispatch( { type: 'UPDATE_ELEMENT_CONTENT', content: newContent } );
 	},
@@ -58,6 +62,7 @@ export default React.createClass( {
 					editableElements={ this.state.editableElements }
 					onEditElement={ this.handleEditElement }
 					addClickableElement={ this.addClickableElement }
+					onMarkupChange={ this.handleMarkupChange }
 				/>
 			</div>
 		);
