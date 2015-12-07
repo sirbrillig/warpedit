@@ -28,6 +28,10 @@ export default React.createClass( {
 		this.updateFrameContent( this.props.markup );
 	},
 
+	shouldComponentUpdate( nextProps ) {
+		return ( nextProps.markup !== this.props.markup );
+	},
+
 	updateFrameContent( content ) {
 		debug( 'adding content to iframe' );
 		this.iframe.addEventListener( 'load', this.attachClickHandlers );
