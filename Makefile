@@ -24,11 +24,11 @@ install:
 
 build:
 	@echo "Running Browserify on your files..."
-	@$(BROWSERIFY) $(SRC_JS) -t $(BABELIFY_PLUGIN) -o $(BUNDLE_JS) -p [ parcelify -o $(BUNDLE_CSS) ]
+	@$(BROWSERIFY) $(SRC_JS) -d -t $(BABELIFY_PLUGIN) -o $(BUNDLE_JS) -p [ parcelify -o $(BUNDLE_CSS) ]
 	@echo "All done!"
 
 watchify:
 	@echo "Running Browserify on your files and watching for changes... (Press CTRL-C to stop)"
-	@$(WATCHIFY) $(SRC_JS) --verbose -t $(BABELIFY_PLUGIN) -o $(BUNDLE_JS) -p [ parcelify -wo $(BUNDLE_CSS) ]
+	@$(WATCHIFY) $(SRC_JS) --verbose -d -t $(BABELIFY_PLUGIN) -o $(BUNDLE_JS) -p [ parcelify -wo $(BUNDLE_CSS) ]
 
 .PHONY: build run watchify build install npm
