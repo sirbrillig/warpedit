@@ -90,6 +90,22 @@ export default React.createClass( {
 		this.props.addClickableElement( element );
 		element.elementKey = elementKey;
 		element.onclick = this.handleClick;
+		this.flashElement( element );
+	},
+
+	flashElement( element ) {
+		const oldTransition = element.style.transition;
+		setTimeout( this.doFlash.bind( this, element ), 1000 );
+		setTimeout( this.doFlash.bind( this, element ), 3000 );
+		setTimeout( this.doFlash.bind( this, element ), 5000 );
+		setTimeout( () => element.style.transition = oldTransition, 6000 );
+	},
+
+	doFlash( element ) {
+		const oldBackground = element.style.backgroundColor;
+		element.style.transition = 'all 500ms ease-in-out';
+		element.style.backgroundColor = 'orange';
+		setTimeout( () => element.style.backgroundColor = oldBackground, 500 );
 	},
 
 	handleClick( event ) {
