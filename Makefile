@@ -7,16 +7,19 @@ BUNDLE_JS = public/js/bundle.js
 BABELIFY_PLUGIN = [ babelify --presets [ react ] ]
 BUNDLE_CSS = public/styles/bundle.css
 
-run: npm install webserver watchify
+run: node-version npm install webserver watchify
 
-build: npm install build
+build: node-version npm install build
+
+node-version:
+	@if [ "$(shell $(NODE) --version | sed 's/[^0-9]//g')" -lt 400 ]; then echo "Please upgrade your version of Node.js: https://nodejs.org/"; exit 1; fi
 
 webserver:
 	@$(NODE) index.js&
 
 npm:
 	@echo "Checking for npm..."
-	@command -v npm >/dev/null 2>&1 || { echo >&2 "Please install Node.js: https://nodejs.org/"; exit 1;  }
+	@command -v npm >/dev/null 2>&1 || { echo >&2 "Please install Node.js: https://nodejs.org/"; exit 1; }
 
 install:
 	@echo "Checking dependencies..."
@@ -31,4 +34,4 @@ watchify:
 	@echo "Running Browserify on your files and watching for changes... (Press CTRL-C to stop)"
 	@$(WATCHIFY) $(SRC_JS) --verbose -d -t $(BABELIFY_PLUGIN) -o $(BUNDLE_JS) -p [ parcelify -wo $(BUNDLE_CSS) ]
 
-.PHONY: build run watchify build install npm
+.PHONY: build run watchify build install npm node-version
