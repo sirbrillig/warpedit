@@ -95,17 +95,16 @@ export default React.createClass( {
 
 	flashElement( element ) {
 		const oldTransition = element.style.transition;
-		setTimeout( this.doFlash.bind( this, element ), 1000 );
-		setTimeout( this.doFlash.bind( this, element ), 3000 );
-		setTimeout( this.doFlash.bind( this, element ), 5000 );
-		setTimeout( () => element.style.transition = oldTransition, 6000 );
-	},
-
-	doFlash( element ) {
 		const oldBackground = element.style.backgroundColor;
+		const oldShadow = element.style.boxShadow;
 		element.style.transition = 'all 500ms ease-in-out';
 		element.style.backgroundColor = 'orange';
-		setTimeout( () => element.style.backgroundColor = oldBackground, 500 );
+		element.style.boxShadow = 'orange 0px 0px 2px 2px';
+		setTimeout( () => {
+			element.style.backgroundColor = oldBackground;
+			element.style.boxShadow = oldShadow;
+			setTimeout( () => element.style.transition = oldTransition, 500 );
+		}, 500 );
 	},
 
 	handleClick( event ) {
