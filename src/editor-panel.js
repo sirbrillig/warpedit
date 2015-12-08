@@ -1,10 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
-import debugFactory from 'debug';
 import noop from 'lodash.noop';
-
-const debug = debugFactory( 'warpedit:editor-panel' );
 
 export default React.createClass( {
 	displayName: 'EditorPanel',
@@ -30,7 +27,6 @@ export default React.createClass( {
 	},
 
 	componentWillReceiveProps( nextProps ) {
-		debug( 'editing', nextProps.content );
 		this.setState( { content: nextProps.content } );
 	},
 

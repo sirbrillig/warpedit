@@ -6,12 +6,12 @@ export default React.createClass( {
 	displayName: 'MenuBar',
 
 	propTypes: {
-		editorActive: React.PropTypes.bool,
+		isEditorActive: React.PropTypes.bool,
 	},
 
 	getDefaultProps() {
 		return {
-			editorActive: false
+			isEditorActive: false
 		}
 	},
 
@@ -28,7 +28,7 @@ export default React.createClass( {
 	render() {
 		return (
 			<div className="warpedit-menu-bar">
-			{ this.props.editorActive ? this.renderEditorButtons() : '' }
+			{ this.props.isEditorActive ? this.renderEditorButtons() : '' }
 			</div>
 		);
 	}

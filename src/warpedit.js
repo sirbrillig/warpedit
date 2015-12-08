@@ -12,6 +12,10 @@ const debug = debugFactory( 'warpedit:warpedit' );
 export default React.createClass( {
 	displayName: 'Warpedit',
 
+	componentWillMount() {
+		this.updateWarpedit();
+	},
+
 	componentDidMount() {
 		store.subscribe( this.updateWarpedit );
 	},
@@ -19,15 +23,15 @@ export default React.createClass( {
 	getInitialState() {
 		return {
 			editingContent: '',
-			editorActive: false,
+			isEditorActive: false,
 			editableElements: {},
 		}
 	},
 
 	updateWarpedit() {
 		debug( 'new store state', store.getState() );
-		const { editorActive, editingContent, editableElements } = store.getState();
-		this.setState( { editorActive, editingContent, editableElements } );
+		const { isEditorActive, editingContent, editableElements, initialMarkup } = store.getState();
+		this.setState( { isEditorActive, editingContent, editableElements, initialMarkup } );
 	},
 
 	handleEditElement( elementKey ) {
@@ -39,25 +43,25 @@ export default React.createClass( {
 		store.dispatch( { type: 'ADD_EDITABLE_ELEMENT', elementKey, content: element.innerHTML } );
 	},
 
-	handleMarkupChange( newMarkup ) {
-		store.dispatch( { type: 'UPDATE_MARKUP', markup: newMarkup } );
+	handleMarkupChange( markup ) {
+		store.dispatch( { type: 'UPDATE_MARKUP', markup } );
 	},
 
-	onEditChange( newContent ) {
-		store.dispatch( { type: 'UPDATE_ELEMENT_CONTENT', content: newContent } );
+	onEditChange( content ) {
+		store.dispatch( { type: 'UPDATE_ELEMENT_CONTENT', content } );
 	},
 
 	render() {
 		return (
 			<div>
-				<MenuBar editorActive={ this.state.editorActive }/>
+				<MenuBar isEditorActive={ this.state.isEditorActive }/>
 				<EditorPanel
-					active={ this.state.editorActive }
+					active={ this.state.isEditorActive }
 					content={ this.state.editingContent }
 					onChange={ this.onEditChange }
 				/>
 				<Preview
-					markup="Hello, <span class='warpedit-clickable'>human</span>.<br/><span class='warpedit-clickable'>I hope your day is going well!</span>"
+					initialMarkup={ this.state.initialMarkup }
 					editableElements={ this.state.editableElements }
 					onEditElement={ this.handleEditElement }
 					addClickableElement={ this.addClickableElement }

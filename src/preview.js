@@ -12,7 +12,7 @@ export default React.createClass( {
 	displayName: 'Preview',
 
 	propTypes: {
-		markup: React.PropTypes.string.isRequired,
+		initialMarkup: React.PropTypes.string.isRequired,
 		clickableClassName: React.PropTypes.string,
 		getMarkupClassName: React.PropTypes.string,
 		editableElements: React.PropTypes.object,
@@ -33,15 +33,15 @@ export default React.createClass( {
 	},
 
 	componentDidMount() {
-		this.updateFrameContent( this.props.markup );
+		this.updateFrameContent( this.props.initialMarkup );
 	},
 
 	componentDidUpdate() {
-		this.updateFrameContent( this.props.markup );
+		this.updateFrameContent( this.props.initialMarkup );
 	},
 
 	shouldComponentUpdate( nextProps ) {
-		return ( nextProps.markup !== this.props.markup );
+		return ( nextProps.initialMarkup !== this.props.initialMarkup );
 	},
 
 	componentWillReceiveProps( nextProps ) {

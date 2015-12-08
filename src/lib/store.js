@@ -4,11 +4,12 @@ import debugFactory from 'debug';
 const debug = debugFactory( 'warpedit:store' );
 
 const initialState = {
-	editorActive: false,
+	isEditorActive: false,
 	editingKey: '',
 	editingContent: '',
 	editableElements: {},
 	markup: '',
+	initialMarkup: 'Hello, <span class="warpedit-clickable">human</span>.<br/><span class="warpedit-clickable">I hope your day is going well!</span>',
 };
 
 function updateObject( object, key, value ) {
@@ -19,7 +20,7 @@ export default createStore( ( state = initialState, action ) => {
 	switch ( action.type ) {
 		case 'EDIT_ELEMENT':
 			debug( 'editing element', action.elementKey );
-			return Object.assign( {}, state, { editorActive: true, editingKey: action.elementKey, editingContent: state.editableElements[ action.elementKey ] } );
+			return Object.assign( {}, state, { isEditorActive: true, editingKey: action.elementKey, editingContent: state.editableElements[ action.elementKey ] } );
 			break;
 
 		case 'UPDATE_ELEMENT_CONTENT':
@@ -28,7 +29,7 @@ export default createStore( ( state = initialState, action ) => {
 
 		case 'EDIT_COMPLETE':
 			debug( 'applying changes to element', state.editingKey );
-			return Object.assign( {}, state, { editorActive: false, editingKey: '', editingContent: '', editableElements: updateObject( state.editableElements, state.editingKey, state.editingContent ) } );
+			return Object.assign( {}, state, { isEditorActive: false, editingKey: '', editingContent: '', editableElements: updateObject( state.editableElements, state.editingKey, state.editingContent ) } );
 			break;
 
 		case 'ADD_EDITABLE_ELEMENT':
