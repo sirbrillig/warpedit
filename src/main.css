@@ -19,7 +19,7 @@ body {
 	transition: all 300ms ease-in-out;
 	max-height: 0;
 	overflow: hidden;
-	border-bottom: 1px solid #FFC107;
+	border-bottom: 2px solid #FFC107;
 }
 
 .warpedit-editor-panel textarea {
@@ -27,6 +27,8 @@ body {
 	height: 100%;
 	border: none;
 	font-size: 1em;
+	padding: 8px;
+	background-color: #FFFAEE;
 }
 
 .warpedit-editor-panel.is-active {
