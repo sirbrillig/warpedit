@@ -1,8 +1,7 @@
 import React from 'react';
-import get from 'lodash.get';
 import debugFactory from 'debug';
 
-import store from './store';
+import store from './lib/store';
 import Preview from './preview';
 import EditorPanel from './editor-panel';
 import MenuBar from './menu-bar';
