@@ -41,4 +41,7 @@ watchify:
 	@echo "Running Browserify on your files and watching for changes... (Press CTRL-C to stop)"
 	@$(WATCHIFY) $(SRC_JS) --verbose -d -t $(BABELIFY_PLUGIN) -o $(BUNDLE_JS) -p [ parcelify -wo $(BUNDLE_CSS) ]
 
-.PHONY: build run watchify build install npm node-version build-server
+clean:
+	@rm -rf node_modules
+
+.PHONY: build run watchify build install npm node-version build-server clean
