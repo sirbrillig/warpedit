@@ -1,5 +1,9 @@
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 import debugFactory from 'debug';
+import cheerio from 'cheerio';
+
+import { getElementKey } from '../lib/elements';
 
 const debug = debugFactory( 'warpedit:store' );
 
@@ -7,20 +11,17 @@ const initialState = {
 	isEditorActive: false,
 	editingKey: '',
 	editingContent: '',
-	editableElements: {},
 	markup: '',
-	initialMarkup: 'Hello, <span class="warpedit-clickable">human</span>.<br/><span class="warpedit-clickable">I hope your day is going well!</span>',
+	authToken: null,
 };
 
-function updateObject( object, key, value ) {
-	return Object.assign( {}, object, { [ key ]: value } );
-}
-
-export default createStore( ( state = initialState, action ) => {
+const createStoreWithMiddleware = applyMiddleware( thunk )( createStore );
+export default createStoreWithMiddleware( ( state = initialState, action ) => {
 	switch ( action.type ) {
 		case 'EDIT_ELEMENT':
 			debug( 'editing element', action.elementKey );
-			return Object.assign( {}, state, { isEditorActive: true, editingKey: action.elementKey, editingContent: state.editableElements[ action.elementKey ] } );
+			const editingContent = cheerio( `[data-preview-id='${action.elementKey}']`, state.markup ).html();
+			return Object.assign( {}, state, { isEditorActive: true, editingKey: action.elementKey, editingContent } );
 			break;
 
 		case 'UPDATE_ELEMENT_CONTENT':
@@ -29,17 +30,30 @@ export default createStore( ( state = initialState, action ) => {
 
 		case 'EDIT_COMPLETE':
 			debug( 'applying changes to element', state.editingKey );
-			return Object.assign( {}, state, { isEditorActive: false, editingKey: '', editingContent: '', editableElements: updateObject( state.editableElements, state.editingKey, state.editingContent ) } );
+			const findInPage = cheerio.load( state.markup );
+			findInPage( `[data-preview-id='${state.editingKey}']` ).html( state.editingContent );
+			return Object.assign( {}, state, { isEditorActive: false, editingKey: '', editingContent: '', markup: findInPage.html() } );
 			break;
 
-		case 'ADD_EDITABLE_ELEMENT':
-			debug( 'adding editable element content', action.elementKey );
-			return Object.assign( {}, state, { editableElements: updateObject( state.editableElements, action.elementKey, action.content ) } );
-			break;
-
+		case 'INITIAL_MARKUP_RECEIVED':
+			debug( 'initial markup received' );
+			// same action as UPDATE_MARKUP, so fall through
 		case 'UPDATE_MARKUP':
 			debug( 'markup changed' );
-			return Object.assign( {}, state, { markup: action.markup } );
+			let markup = action.markup;
+			if ( action.editableSelector ) {
+				const findInNewPage = cheerio.load( action.markup );
+				findInNewPage( action.editableSelector ).toArray().forEach( ( element ) => {
+					cheerio( element ).attr( 'data-preview-id', getElementKey( cheerio( element ).html() ) );
+				} );
+				markup = findInNewPage.html();
+			}
+			return Object.assign( {}, state, { markup } );
+			break;
+
+		case 'SAVE_AUTH_TOKEN':
+			debug( 'saving auth token' );
+			return Object.assign( {}, state, { authToken: action.token } );
 			break;
 	}
 	return state;

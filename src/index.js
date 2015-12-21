@@ -1,9 +1,8 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Warpedit from './warpedit';
+import routes from './routes';
 
 ReactDOM.render(
-	<Warpedit />,
+	routes,
 	document.getElementById( 'content' )
 );

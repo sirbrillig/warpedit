@@ -1,5 +1,8 @@
 import md5 from 'md5';
 
 export function getElementKey( element ) {
-	return md5( element.innerHTML );
+	if ( element.innerHTML ) {
+		return md5( element.innerHTML );
+	}
+	return md5( element );
 }
