@@ -3,8 +3,6 @@ import debugFactory from 'debug';
 import noop from 'lodash.noop';
 import cheerio from 'cheerio';
 
-import { getElementKey } from '../lib/elements';
-
 const debug = debugFactory( 'warpedit:preview' );
 
 // Each clickable DOM element in the preview keyed by the result of getElementKey
@@ -57,13 +55,17 @@ export default React.createClass( {
 		return findInNewPage( '[data-preview-id]' ).toArray().reduce( ( changed, newElement ) => {
 			const elementId = cheerio( newElement ).data( 'preview-id' );
 			const oldElement = findInOldPage( `[data-preview-id='${elementId}']` );
-			if ( oldElement.length < 1 ) throw { message: `missing element ${elementId}` };
+			if ( oldElement.length < 1 ) throw `missing element ${elementId}`;
 			if ( cheerio( oldElement ).html() !== cheerio( newElement ).html() ) return changed.concat( { elementId, newMarkup: cheerio( newElement ).html() } );
 			return changed;
 		}, [] );
 	},
 
 	updatePreviewElement( elementKey, content ) {
+		if ( ! clickableElements[ elementKey ] ) {
+			debug( `expected to find cached page element ${elementKey} in`, clickableElements );
+			throw `Could not update page element '${elementKey}'; element was not cached.`;
+		}
 		clickableElements[ elementKey ].innerHTML = content;
 	},
 
@@ -85,11 +87,14 @@ export default React.createClass( {
 	},
 
 	clearCachedElements() {
+		debug( 'clearing cached elements' );
 		clickableElements = {};
 	},
 
 	cacheElement( element ) {
-		clickableElements[ getElementKey( element ) ] = element;
+		const elementKey = element.dataset.previewId;
+		debug( `caching element ${elementKey}` );
+		clickableElements[ elementKey ] = element;
 	},
 
 	attachClickHandler( element ) {

@@ -45,7 +45,9 @@ export default createStoreWithMiddleware( ( state = initialState, action ) => {
 			if ( action.editableSelector ) {
 				const findInNewPage = cheerio.load( action.markup );
 				findInNewPage( action.editableSelector ).toArray().forEach( ( element ) => {
-					cheerio( element ).attr( 'data-preview-id', getElementKey( cheerio( element ).html() ) );
+					const elementKey = getElementKey( cheerio( element ).html() );
+					debug( `adding preview-id to element ${elementKey}` );
+					cheerio( element ).attr( 'data-preview-id', elementKey );
 				} );
 				markup = findInNewPage.html();
 			}
