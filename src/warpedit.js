@@ -27,7 +27,8 @@ export default React.createClass( {
 		return {
 			editingContent: '',
 			isEditorActive: false,
-			previewElementMarkup: {},
+			authToken: null,
+			site: null,
 		};
 	},
 
@@ -36,13 +37,10 @@ export default React.createClass( {
 		const hashParams = querystring.parse( newProps.location.hash.substr( 1 ) );
 		if ( hashParams.access_token ) {
 			debug( 'got oauth token', hashParams.access_token );
-			store.dispatch( saveToken( { token: hashParams.access_token, site: hashParams.site_id } ) );
-			return;
+			store.dispatch( saveToken( hashParams.access_token, hashParams.site_id ) );
+			return this.props.history.replaceState( null, `/edit/${hashParams.site_id}` );
 		}
-		if ( ! newProps.params.site ) {
-			debug( 'no site provided' );
-			// TODO: show a form of some kind?
-		} else if ( ! store.getState().authToken ) {
+		if ( ! store.getState().authToken && newProps.params.site ) {
 			debug( 'requesting authentication token for', newProps.params.site );
 			store.dispatch( getAuthFromServer( newProps.params.site ) );
 		}
@@ -50,18 +48,26 @@ export default React.createClass( {
 
 	updateWarpedit() {
 		debug( 'new store state', store.getState() );
-		const { isEditorActive, editingContent, previewElementMarkup, markup, authToken } = store.getState();
+		const { isEditorActive, editingContent, markup, authToken, site } = store.getState();
 		if ( authToken && ! markup ) {
 			store.dispatch( fetchInitialMarkup() );
 		}
-		this.setState( { isEditorActive, editingContent, previewElementMarkup, markup } );
+		this.setState( { isEditorActive, editingContent, markup, authToken, site } );
 	},
 
 	render() {
+		if ( ! this.state.site && ! this.props.params.site ) {
+			return (
+				<div>
+					<h2>No site specified</h2>
+					<h3>Please visit `/edit/YOURSITEHERE`</h3>
+				</div>
+			);
+		}
 		if ( this.state.markup.length < 1 ) {
 			return (
 				<div>
-					<p>Loading...</p>
+					<h2>Loading...</h2>
 				</div>
 			);
 		}

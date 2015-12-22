@@ -13,6 +13,7 @@ const initialState = {
 	editingContent: '',
 	markup: '',
 	authToken: null,
+	site: null,
 };
 
 const createStoreWithMiddleware = applyMiddleware( thunk )( createStore );
@@ -53,7 +54,7 @@ export default createStoreWithMiddleware( ( state = initialState, action ) => {
 
 		case 'SAVE_AUTH_TOKEN':
 			debug( 'saving auth token' );
-			return Object.assign( {}, state, { authToken: action.token } );
+			return Object.assign( {}, state, { authToken: action.token, site: action.site } );
 			break;
 	}
 	return state;

@@ -4,8 +4,8 @@ import * as auth from '../lib/auth';
 
 export function fetchInitialMarkup() {
 	return function( dispatch, getState ) {
-		const { token, site } = getState().authToken;
-		const wpcom = wpcomFactory( token );
+		const { authToken, site } = getState();
+		const wpcom = wpcomFactory( authToken );
 		const endpoint = `/sites/${site}/previews/mine`;
 		wpcom.req.get( endpoint, ( err, response ) => {
 			if ( ! err ) dispatch( { type: 'INITIAL_MARKUP_RECEIVED', markup: response.html, editableSelector: '.entry-content p' } );
@@ -20,8 +20,8 @@ export function getAuthFromServer( siteUrl ) {
 	}
 }
 
-export function saveToken( token ) {
-	return { type: 'SAVE_AUTH_TOKEN', token };
+export function saveToken( token, site ) {
+	return { type: 'SAVE_AUTH_TOKEN', token, site };
 }
 
 export function editElement( elementKey ) {
