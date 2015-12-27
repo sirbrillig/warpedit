@@ -3,6 +3,7 @@ import persistState from 'redux-localstorage';
 import thunk from 'redux-thunk';
 import debugFactory from 'debug';
 import cheerio from 'cheerio';
+import url from 'url';
 
 import { getElementKey } from '../lib/elements';
 
@@ -14,7 +15,9 @@ const initialState = {
 	editingContent: '',
 	markup: '',
 	authToken: null,
+	url: null,
 	site: null,
+	path: null,
 };
 
 const createStoreWithMiddleware = compose(
@@ -27,6 +30,12 @@ export default createStoreWithMiddleware( ( state = initialState, action ) => {
 		case 'CLEAR_STATE':
 			debug( 'clearing state' );
 			return Object.assign( {}, initialState );
+			break;
+
+		case 'SAVE_SITE':
+			debug( 'saving new site data' );
+			const { host, path } = url.parse( action.siteUrl );
+			return Object.assign( {}, state, { url: action.siteUrl, site: host, path: path } );
 			break;
 
 		case 'EDIT_ELEMENT':
@@ -66,7 +75,7 @@ export default createStoreWithMiddleware( ( state = initialState, action ) => {
 
 		case 'SAVE_AUTH_TOKEN':
 			debug( 'saving auth token' );
-			return Object.assign( {}, state, { authToken: action.token, site: action.site } );
+			return Object.assign( {}, state, { authToken: action.token } );
 			break;
 	}
 	return state;

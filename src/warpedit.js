@@ -37,19 +37,19 @@ export default React.createClass( {
 		const hashParams = querystring.parse( newProps.location.hash.substr( 1 ) );
 		if ( hashParams.access_token ) {
 			debug( 'got oauth token', hashParams.access_token );
-			store.dispatch( saveToken( hashParams.access_token, hashParams.site_id ) );
-			return this.props.history.replaceState( null, `/edit/${hashParams.site_id}` );
+			store.dispatch( saveToken( hashParams.access_token ) );
+			return this.props.history.replaceState( null, `/edit/${encodeURIComponent( store.getState().url )}` );
 		}
-		if ( ! newProps.params.site ) {
+		if ( ! newProps.params.url ) {
 			return store.dispatch( clearState() );
 		}
-		if ( newProps.params.site && newProps.params.site !== store.getState().site ) {
-			debug( 'requesting new authentication token for', newProps.params.site );
-			return store.dispatch( getAuthForNewSite( newProps.params.site ) );
+		if ( newProps.params.url !== store.getState().url ) {
+			debug( 'requesting new authentication token for', newProps.params.url );
+			return store.dispatch( getAuthForNewSite( newProps.params.url ) );
 		}
-		if ( ! store.getState().authToken && newProps.params.site ) {
-			debug( 'requesting authentication token for', newProps.params.site );
-			store.dispatch( getAuthFromServer( newProps.params.site ) );
+		if ( ! store.getState().authToken ) {
+			debug( 'requesting authentication token for', newProps.params.url );
+			store.dispatch( getAuthFromServer( newProps.params.url ) );
 		}
 	},
 
@@ -67,7 +67,7 @@ export default React.createClass( {
 			return (
 				<div>
 					<h2>No site specified</h2>
-					<h3>Please visit `/edit/YOURSITEHERE`</h3>
+					<h3>Please visit `/edit/URL_OF_PAGE_TO_EDIT`</h3>
 				</div>
 			);
 		}
