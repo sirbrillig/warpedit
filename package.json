@@ -4,6 +4,7 @@
   "description": "A program to edit defined sections of html pages.",
   "style": "src/*.css",
   "scripts": {
+    "start": "make run",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Payton Swick",
