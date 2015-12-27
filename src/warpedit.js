@@ -6,7 +6,7 @@ import store from './lib/store';
 import Preview from './preview';
 import EditorPanel from './editor-panel';
 import MenuBar from './menu-bar';
-import { fetchInitialMarkup, getAuthFromServer, saveToken, changeElement, editElement } from './lib/actions';
+import { fetchInitialMarkup, getAuthForNewSite, getAuthFromServer, saveToken, changeElement, editElement } from './lib/actions';
 
 const debug = debugFactory( 'warpedit:warpedit' );
 
@@ -39,6 +39,10 @@ export default React.createClass( {
 			debug( 'got oauth token', hashParams.access_token );
 			store.dispatch( saveToken( hashParams.access_token, hashParams.site_id ) );
 			return this.props.history.replaceState( null, `/edit/${hashParams.site_id}` );
+		}
+		if ( newProps.params.site && newProps.params.site !== store.getState().site ) {
+			debug( 'requesting new authentication token for', newProps.params.site );
+			return store.dispatch( getAuthForNewSite( newProps.params.site ) );
 		}
 		if ( ! store.getState().authToken && newProps.params.site ) {
 			debug( 'requesting authentication token for', newProps.params.site );

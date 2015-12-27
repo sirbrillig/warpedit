@@ -24,6 +24,11 @@ const createStoreWithMiddleware = compose(
 
 export default createStoreWithMiddleware( ( state = initialState, action ) => {
 	switch ( action.type ) {
+		case 'CLEAR_STATE':
+			debug( 'clearing state' );
+			return Object.assign( {}, initialState );
+			break;
+
 		case 'EDIT_ELEMENT':
 			debug( 'editing element', action.elementKey );
 			const editingContent = cheerio( `[data-preview-id='${action.elementKey}']`, state.markup ).html();

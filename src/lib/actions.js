@@ -13,6 +13,14 @@ export function fetchInitialMarkup() {
 	}
 }
 
+export function getAuthForNewSite( siteUrl ) {
+	return function( dispatch ) {
+		dispatch( { type: 'CLEAR_STATE' } );
+		auth.getAuthFromServer( siteUrl );
+		dispatch( { type: 'BEGIN_GET_AUTH' } );
+	}
+}
+
 export function getAuthFromServer( siteUrl ) {
 	return function( dispatch ) {
 		auth.getAuthFromServer( siteUrl );
