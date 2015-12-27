@@ -1,4 +1,5 @@
-import { createStore, applyMiddleware } from 'redux';
+import { compose, createStore, applyMiddleware } from 'redux';
+import persistState from 'redux-localstorage';
 import thunk from 'redux-thunk';
 import debugFactory from 'debug';
 import cheerio from 'cheerio';
@@ -16,7 +17,11 @@ const initialState = {
 	site: null,
 };
 
-const createStoreWithMiddleware = applyMiddleware( thunk )( createStore );
+const createStoreWithMiddleware = compose(
+	applyMiddleware( thunk ),
+	persistState()
+)( createStore );
+
 export default createStoreWithMiddleware( ( state = initialState, action ) => {
 	switch ( action.type ) {
 		case 'EDIT_ELEMENT':
