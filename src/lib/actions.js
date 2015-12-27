@@ -13,9 +13,13 @@ export function fetchInitialMarkup() {
 	}
 }
 
+export function clearState() {
+	return { type: 'CLEAR_STATE' };
+}
+
 export function getAuthForNewSite( siteUrl ) {
 	return function( dispatch ) {
-		dispatch( { type: 'CLEAR_STATE' } );
+		dispatch( clearState() );
 		auth.getAuthFromServer( siteUrl );
 		dispatch( { type: 'BEGIN_GET_AUTH' } );
 	}
