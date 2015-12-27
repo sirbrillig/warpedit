@@ -37,10 +37,17 @@ export default React.createClass( {
 		const hashParams = querystring.parse( newProps.location.hash.substr( 1 ) );
 		if ( hashParams.access_token ) {
 			debug( 'got oauth token', hashParams.access_token );
+			// also save in localStorage
+			if ( typeof localStorage !== 'undefined' ) {
+				localStorage.setItem( `authToken_${hashParams.site_id}`, hashParams.access_token );
+			}
 			store.dispatch( saveToken( hashParams.access_token, hashParams.site_id ) );
 			return this.props.history.replaceState( null, `/edit/${hashParams.site_id}` );
 		}
-		if ( ! store.getState().authToken && newProps.params.site ) {
+		if ( newProps.params.site && typeof localStorage !== 'undefined' && localStorage.getItem( `authToken_${newProps.params.site}` ) ) {
+			debug( 'found saved oauth token in localStorage' );
+			store.dispatch( saveToken( localStorage.getItem( `authToken_${newProps.params.site}` ), newProps.params.site ) );
+		} else if ( ! store.getState().authToken && newProps.params.site ) {
 			debug( 'requesting authentication token for', newProps.params.site );
 			store.dispatch( getAuthFromServer( newProps.params.site ) );
 		}
