@@ -5,9 +5,9 @@ import * as auth from '../lib/auth';
 
 export function fetchInitialMarkup() {
 	return function( dispatch, getState ) {
-		const { authToken, site } = getState();
+		const { authToken, site, path } = getState();
 		const wpcom = wpcomFactory( authToken );
-		const endpoint = `/sites/${site}/previews/mine`;
+		const endpoint = `/sites/${site}/previews/mine?path=${path}`;
 		wpcom.req.get( endpoint, ( err, response ) => {
 			if ( ! err ) dispatch( saveInitialMarkup( response.html ) );
 		} );
