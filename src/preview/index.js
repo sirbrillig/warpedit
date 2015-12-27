@@ -78,12 +78,20 @@ export default React.createClass( {
 	},
 
 	finishPreviewLoad() {
+		const domLinks = Array.prototype.slice.call( this.iframe.contentDocument.querySelectorAll( 'a' ) );
+		debug( `disabling ${domLinks.length} links in preview` );
+		domLinks.map( this.disableLink );
 		const domElements = Array.prototype.slice.call( this.iframe.contentDocument.querySelectorAll( '[data-preview-id]' ) );
-		debug( 'attaching click handlers to', domElements.length, 'elements' );
+		debug( `attaching click handlers to ${domElements.length} elements` );
 		this.clearCachedElements();
 		domElements.map( this.cacheElement );
 		domElements.map( this.attachClickHandler );
 		domElements.map( this.flashElement );
+	},
+
+	disableLink( element ) {
+		element.href = '#';
+		element.onclick = ( event ) => event.preventDefault();
 	},
 
 	clearCachedElements() {
@@ -115,8 +123,14 @@ export default React.createClass( {
 		}, 500 );
 	},
 
+	findElementKeyOnTarget( target ) {
+		if ( target.dataset.previewId ) return target.dataset.previewId;
+		return this.findElementKeyOnTarget( target.parentNode );
+	},
+
 	handleClick( event ) {
-		const elementKey = event.target.dataset.previewId;
+		const elementKey = this.findElementKeyOnTarget( event.target );
+		if ( ! elementKey ) throw 'Click detected on unknown element';
 		debug( 'click detected for element', elementKey );
 		this.props.onClick( elementKey );
 	},
