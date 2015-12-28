@@ -1,6 +1,7 @@
 import React from 'react';
 
 import store from './lib/store';
+import { saveChanges, finishEditing } from './lib/actions';
 
 export default React.createClass( {
 	displayName: 'MenuBar',
@@ -16,7 +17,17 @@ export default React.createClass( {
 	},
 
 	handleDoneEditing() {
-		store.dispatch( { type: 'EDIT_COMPLETE' } );
+		store.dispatch( finishEditing() );
+	},
+
+	handleSave() {
+		store.dispatch( saveChanges() );
+	},
+
+	renderStandardButtons() {
+		return (
+			<button className="btn" onClick={ this.handleSave }>Save Changes</button>
+		);
 	},
 
 	renderEditorButtons() {
@@ -28,7 +39,7 @@ export default React.createClass( {
 	render() {
 		return (
 			<div className="warpedit-menu-bar">
-			{ this.props.isEditorActive ? this.renderEditorButtons() : '' }
+			{ this.props.isEditorActive ? this.renderEditorButtons() : this.renderStandardButtons() }
 			</div>
 		);
 	}

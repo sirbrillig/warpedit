@@ -1,5 +1,6 @@
 import wpcomFactory from 'wpcom';
 import url from 'url';
+import cheerio from 'cheerio';
 
 import * as auth from '../lib/auth';
 
@@ -8,8 +9,9 @@ export function fetchInitialMarkup() {
 		const { authToken, site, path } = getState();
 		const wpcom = wpcomFactory( authToken );
 		const endpoint = `/sites/${site}/previews/mine?path=${path}`;
-		wpcom.req.get( endpoint, ( err, response ) => {
-			if ( ! err ) dispatch( saveInitialMarkup( response.html ) );
+		wpcom.req.get( endpoint )
+		.then( ( response ) => {
+			dispatch( saveInitialMarkup( response.html ) );
 		} );
 	}
 }
@@ -56,4 +58,28 @@ export function editElement( elementKey ) {
 
 export function changeElement( content ) {
 	return { type: 'UPDATE_ELEMENT_CONTENT', content };
+}
+
+export function finishEditing() {
+	return { type: 'EDIT_COMPLETE' };
+}
+
+export function uploadComplete() {
+	return { type: 'UPLOAD_COMPLETE' };
+}
+
+export function saveChanges() {
+	return function( dispatch, getState ) {
+		const { authToken, site, path, markup } = getState();
+		const wpcom = wpcomFactory( authToken );
+		const postId = 1;
+		// TODO: use `path` somehow to determine postId?
+		const post = wpcom.site( site ).post( postId );
+		const content = cheerio( '.entry-content', markup ).html();
+		const postData = { content };
+		post.update( postData )
+		.then( () => {
+			dispatch( uploadComplete() );
+		} );
+	}
 }
