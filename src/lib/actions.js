@@ -1,23 +1,32 @@
 import wpcomFactory from 'wpcom';
+import debugFactory from 'debug';
 
 import * as auth from '../lib/auth';
 import { applyChangesToContent } from '../lib/content';
+
+const debug = debugFactory( 'warpedit:actions' );
 
 export function fetchInitialMarkup() {
 	return function( dispatch, getState ) {
 		const { authToken, site, postId } = getState();
 		const wpcom = wpcomFactory( authToken );
+		debug( 'fetching initial markup' );
 		wpcom.site( site ).post( postId ).get( { context: 'edit' } )
 		.then( ( response ) => {
+			debug( 'got post data response', response.slug );
 			dispatch( savePostContent( response.content, response.slug ) );
 			const endpoint = `/sites/${site}/previews/mine?path=${response.slug}/`;
 			return wpcom.req.get( endpoint );
 		} )
 		.then( ( response ) => {
+			debug( 'got initial markup response' );
 			if ( ! response.html ) {
 				throw 'No markup received from API';
 			}
 			dispatch( saveInitialMarkup( response.html ) );
+		} )
+		.catch( () => {
+			throw 'Error fetching markup from API';
 		} );
 	}
 }
@@ -36,6 +45,7 @@ export function clearState() {
 
 export function getAuthForNewSite( site, postId ) {
 	return function( dispatch ) {
+		debug( 'fetching new authToken' );
 		dispatch( clearState() );
 		dispatch( getAuthFromServer( site, postId ) );
 	}
@@ -81,6 +91,9 @@ export function saveChanges() {
 		post.update( { content } )
 		.then( () => {
 			dispatch( uploadComplete() );
+		} )
+		.catch( () => {
+			throw 'Error saving markup to API';
 		} );
 	}
 }

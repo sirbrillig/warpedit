@@ -23,8 +23,7 @@ const initialState = {
 };
 
 const createStoreWithMiddleware = compose(
-	applyMiddleware( thunk ),
-	persistState()
+	applyMiddleware( thunk )
 )( createStore );
 
 export default createStoreWithMiddleware( ( state = initialState, action ) => {

@@ -33,14 +33,15 @@ export default React.createClass( {
 	},
 
 	callInitialActions( newProps ) {
-		debug( 'calling initial actions', newProps );
+		debug( 'calling initial actions' );
 		if ( ! newProps.params.site || ! newProps.params.post ) {
+			debug( 'no site or post specified. resetting state.' );
 			return store.dispatch( clearState() );
 		}
 		const hashParams = querystring.parse( newProps.location.hash.substr( 1 ) );
 		if ( hashParams.access_token ) {
 			debug( 'got oauth token', hashParams.access_token );
-			return store.dispatch( saveToken( hashParams.access_token, newProps.params.site, newProps.params.post ) );
+			store.dispatch( saveToken( hashParams.access_token, newProps.params.site, newProps.params.post ) );
 		}
 		if ( newProps.params.site !== store.getState().site ) {
 			debug( 'requesting new authentication token for', newProps.params.site );
@@ -48,16 +49,17 @@ export default React.createClass( {
 		}
 		if ( ! store.getState().authToken ) {
 			debug( 'requesting authentication token for', newProps.params.site );
-			store.dispatch( getAuthFromServer( newProps.params.site ) );
+			return store.dispatch( getAuthFromServer( newProps.params.site ) );
+		}
+		if ( ! store.getState().markup ) {
+			debug( 'requesting initial markup' );
+			store.dispatch( fetchInitialMarkup() );
 		}
 	},
 
 	updateWarpedit() {
 		debug( 'new store state', store.getState() );
 		const { isEditorActive, editingContent, markup, authToken, site } = store.getState();
-		if ( authToken && ! markup ) {
-			store.dispatch( fetchInitialMarkup() );
-		}
 		this.setState( { isEditorActive, editingContent, markup, authToken, site } );
 	},
 
