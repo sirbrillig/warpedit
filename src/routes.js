@@ -8,7 +8,7 @@ const history = createBrowserHistory();
 
 export default (
 	<Router history={ history }>
-		<Route path="/edit/:url" component={ Warpedit }/>
+		<Route path="/edit/:site/:post" component={ Warpedit }/>
 		<Route path="/" component={ Warpedit }/>
 	</Router>
 );

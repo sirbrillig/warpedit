@@ -1,33 +1,43 @@
 import wpcomFactory from 'wpcom';
-import url from 'url';
-import cheerio from 'cheerio';
 
 import * as auth from '../lib/auth';
+import { applyChangesToContent } from '../lib/content';
 
 export function fetchInitialMarkup() {
 	return function( dispatch, getState ) {
-		const { authToken, site, path } = getState();
+		const { authToken, site, postId } = getState();
 		const wpcom = wpcomFactory( authToken );
-		const endpoint = `/sites/${site}/previews/mine?path=${path}`;
-		wpcom.req.get( endpoint )
+		wpcom.site( site ).post( postId ).get( { context: 'edit' } )
 		.then( ( response ) => {
+			dispatch( savePostContent( response.content ) );
+			const endpoint = `/sites/${site}/previews/mine?path=${response.slug}/`;
+			return wpcom.req.get( endpoint );
+		} )
+		.then( ( response ) => {
+			if ( ! response.html ) {
+				throw 'No markup received from API';
+			}
 			dispatch( saveInitialMarkup( response.html ) );
 		} );
 	}
 }
 
+export function savePostContent( markup ) {
+	return { type: 'POST_CONTENT_RECEIVED', markup };
+}
+
 export function saveInitialMarkup( markup ) {
-	return { type: 'INITIAL_MARKUP_RECEIVED', markup, editableSelector: '.entry-content p' };
+	return { type: 'INITIAL_MARKUP_RECEIVED', markup, editableSelector: '.warpedit-editable' };
 }
 
 export function clearState() {
 	return { type: 'CLEAR_STATE' };
 }
 
-export function getAuthForNewSite( siteUrl ) {
+export function getAuthForNewSite( site, postId ) {
 	return function( dispatch ) {
 		dispatch( clearState() );
-		dispatch( getAuthFromServer( siteUrl ) );
+		dispatch( getAuthFromServer( site, postId ) );
 	}
 }
 
@@ -35,21 +45,15 @@ export function beginAuth() {
 	return { type: 'BEGIN_GET_AUTH' };
 }
 
-export function saveSite( siteUrl ) {
-	return { type: 'SAVE_SITE', siteUrl };
-}
-
-export function getAuthFromServer( siteUrl ) {
+export function getAuthFromServer( site, postId ) {
 	return function( dispatch ) {
-		const { host } = url.parse( siteUrl );
-		dispatch( saveSite( siteUrl ) );
-		auth.getAuthFromServer( host );
+		auth.getAuthFromServer( site, postId );
 		dispatch( beginAuth() );
 	}
 }
 
-export function saveToken( token ) {
-	return { type: 'SAVE_AUTH_TOKEN', token };
+export function saveToken( token, site, postId ) {
+	return { type: 'SAVE_AUTH_TOKEN', token, site, postId };
 }
 
 export function editElement( elementKey ) {
@@ -70,14 +74,11 @@ export function uploadComplete() {
 
 export function saveChanges() {
 	return function( dispatch, getState ) {
-		const { authToken, site, path, markup } = getState();
+		const { authToken, site, postId, markup, postContent, editableSelector } = getState();
 		const wpcom = wpcomFactory( authToken );
-		const postId = 1;
-		// TODO: use `path` somehow to determine postId?
 		const post = wpcom.site( site ).post( postId );
-		const content = cheerio( '.entry-content', markup ).html();
-		const postData = { content };
-		post.update( postData )
+		const content = applyChangesToContent( postContent, markup, editableSelector );
+		post.update( { content } )
 		.then( () => {
 			dispatch( uploadComplete() );
 		} );
