@@ -9,6 +9,10 @@ const debug = debugFactory( 'warpedit:actions' );
 export function fetchInitialMarkup() {
 	return function( dispatch, getState ) {
 		const { authToken, site, postId } = getState();
+		if ( ! authToken || ! site || ! postId ) {
+			debug( 'cannot fetch markup. insufficient data available' );
+			return;
+		}
 		const wpcom = wpcomFactory( authToken );
 		debug( 'fetching initial markup' );
 		wpcom.site( site ).post( postId ).get( { context: 'edit' } )
@@ -26,6 +30,7 @@ export function fetchInitialMarkup() {
 			dispatch( saveInitialMarkup( response.html ) );
 		} )
 		.catch( () => {
+			dispatch( clearState() );
 			throw 'Error fetching markup from API';
 		} );
 	}
@@ -64,6 +69,10 @@ export function getAuthFromServer( site, postId ) {
 
 export function saveToken( token, site, postId ) {
 	return { type: 'SAVE_AUTH_TOKEN', token, site, postId };
+}
+
+export function saveSite( site, postId ) {
+	return { type: 'SAVE_SITE',  site, postId };
 }
 
 export function editElement( elementKey ) {

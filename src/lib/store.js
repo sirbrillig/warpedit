@@ -23,7 +23,15 @@ const initialState = {
 };
 
 const createStoreWithMiddleware = compose(
-	applyMiddleware( thunk )
+	applyMiddleware( thunk ),
+	persistState( null, {
+		key: 'warpedit',
+		slicer: () => {
+			return ( state ) => {
+				return Object.assign( {}, initialState, { authToken: state.authToken, site: state.site } );
+			}
+		}
+	} )
 )( createStore );
 
 export default createStoreWithMiddleware( ( state = initialState, action ) => {
@@ -75,6 +83,11 @@ export default createStoreWithMiddleware( ( state = initialState, action ) => {
 		case 'SAVE_AUTH_TOKEN':
 			debug( 'saving auth token' );
 			return Object.assign( {}, state, { authToken: action.token, site: action.site, postId: action.postId } );
+			break;
+
+		case 'SAVE_SITE':
+			debug( 'saving site' );
+			return Object.assign( {}, state, { site: action.site, postId: action.postId } );
 			break;
 	}
 	return state;
