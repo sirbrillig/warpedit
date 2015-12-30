@@ -1,7 +1,7 @@
 import React from 'react';
 
 import store from './lib/store';
-import { saveChanges, finishEditing } from './lib/actions';
+import { saveChanges, finishEditing, viewPost } from './lib/actions';
 
 export default React.createClass( {
 	displayName: 'MenuBar',
@@ -24,9 +24,16 @@ export default React.createClass( {
 		store.dispatch( saveChanges() );
 	},
 
+	viewPost() {
+		store.dispatch( viewPost() );
+	},
+
 	renderStandardButtons() {
 		return (
-			<button className="btn" onClick={ this.handleSave }>Save Changes</button>
+			<div>
+				<button className="btn" onClick={ this.handleSave }>Save Changes</button>
+				<button className="btn" onClick={ this.viewPost }>View Post</button>
+			</div>
 		);
 	},
 

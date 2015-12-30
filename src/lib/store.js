@@ -14,6 +14,7 @@ const initialState = {
 	editingContent: '',
 	editableSelector: '',
 	postContent: '',
+	slug: '',
 	initialMarkup: '',
 	markup: '',
 	authToken: null,
@@ -52,7 +53,7 @@ export default createStoreWithMiddleware( ( state = initialState, action ) => {
 
 		case 'POST_CONTENT_RECEIVED':
 			debug( 'post content changed' );
-			return Object.assign( {}, state, { postContent: action.markup } );
+			return Object.assign( {}, state, { postContent: action.markup, slug: action.slug } );
 			break;
 
 		case 'INITIAL_MARKUP_RECEIVED':

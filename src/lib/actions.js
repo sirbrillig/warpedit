@@ -9,7 +9,7 @@ export function fetchInitialMarkup() {
 		const wpcom = wpcomFactory( authToken );
 		wpcom.site( site ).post( postId ).get( { context: 'edit' } )
 		.then( ( response ) => {
-			dispatch( savePostContent( response.content ) );
+			dispatch( savePostContent( response.content, response.slug ) );
 			const endpoint = `/sites/${site}/previews/mine?path=${response.slug}/`;
 			return wpcom.req.get( endpoint );
 		} )
@@ -22,8 +22,8 @@ export function fetchInitialMarkup() {
 	}
 }
 
-export function savePostContent( markup ) {
-	return { type: 'POST_CONTENT_RECEIVED', markup };
+export function savePostContent( markup, slug ) {
+	return { type: 'POST_CONTENT_RECEIVED', markup, slug };
 }
 
 export function saveInitialMarkup( markup ) {
@@ -83,4 +83,18 @@ export function saveChanges() {
 			dispatch( uploadComplete() );
 		} );
 	}
+}
+
+export function viewPost() {
+	return function( dispatch, getState ) {
+		const { site, slug } = getState();
+		openInNewWindow( `http://${site}/${slug}/` );
+	}
+}
+
+function openInNewWindow( url ) {
+	if ( ! window ) {
+		return;
+	}
+	window.open( url, '_blank' );
 }
