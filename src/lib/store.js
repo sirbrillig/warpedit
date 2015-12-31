@@ -15,9 +15,8 @@ const initialState = {
 	editableSelector: '',
 	postContent: '',
 	slug: '',
-	initialMarkup: '',
 	markup: '',
-	authToken: null,
+	auth: {},
 	postId: null,
 	site: null,
 };
@@ -28,7 +27,7 @@ const createStoreWithMiddleware = compose(
 		key: 'warpedit',
 		slicer: () => {
 			return ( state ) => {
-				return Object.assign( {}, initialState, { authToken: state.authToken, site: state.site } );
+				return Object.assign( {}, initialState, { auth: state.auth } );
 			}
 		}
 	} )
@@ -36,11 +35,6 @@ const createStoreWithMiddleware = compose(
 
 export default createStoreWithMiddleware( ( state = initialState, action ) => {
 	switch ( action.type ) {
-		case 'CLEAR_STATE':
-			debug( 'clearing state' );
-			return Object.assign( {}, initialState );
-			break;
-
 		case 'EDIT_ELEMENT':
 			debug( 'editing element', action.elementKey );
 			const editingContent = cheerio( `[data-preview-id='${action.elementKey}']`, state.markup ).html();
@@ -65,30 +59,27 @@ export default createStoreWithMiddleware( ( state = initialState, action ) => {
 
 		case 'INITIAL_MARKUP_RECEIVED':
 			debug( 'initial markup received' );
-			const findInNewPage = cheerio.load( action.markup );
-			findInNewPage( action.editableSelector ).toArray().forEach( ( element ) => {
-				const elementKey = getElementKey( cheerio( element ).html() );
-				debug( `adding preview-id to element ${elementKey}` );
-				cheerio( element ).attr( 'data-preview-id', elementKey );
-			} );
-			const markup = findInNewPage.html();
-			return Object.assign( {}, state, { markup, initialMarkup: markup, editableSelector: action.editableSelector } );
+			const markup = addElementKeysToMarkup( action.markup, action.editableSelector );
+			const { editableSelector, site, postId } = action;
+			const auth = Object.assign( {}, state.auth, { [ site ]: action.authToken } );
+			return Object.assign( {}, state, { markup, editableSelector, site, postId, auth } );
 			break;
 
 		case 'UPDATE_MARKUP':
 			debug( 'markup changed' );
 			return Object.assign( {}, state, { markup: action.markup } );
 			break;
-
-		case 'SAVE_AUTH_TOKEN':
-			debug( 'saving auth token' );
-			return Object.assign( {}, state, { authToken: action.token, site: action.site, postId: action.postId } );
-			break;
-
-		case 'SAVE_SITE':
-			debug( 'saving site' );
-			return Object.assign( {}, state, { site: action.site, postId: action.postId } );
-			break;
 	}
 	return state;
 } );
+
+// TODO: move to content.js
+function addElementKeysToMarkup( markup, editableSelector ) {
+	const findInNewPage = cheerio.load( markup );
+	findInNewPage( editableSelector ).toArray().forEach( ( element ) => {
+		const elementKey = getElementKey( cheerio( element ).html() );
+		debug( `adding preview-id to element ${elementKey}` );
+		cheerio( element ).attr( 'data-preview-id', elementKey );
+	} );
+	return findInNewPage.html();
+}

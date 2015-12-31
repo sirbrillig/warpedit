@@ -14,8 +14,8 @@ export function getAuthFromServer( blog, postId ) {
 		console.error( 'Error trying to authenticate with WordPress.com. No settings found.' );
 		return;
 	}
-	debug( 'starting oauth process' );
 	const redirect = `${settings.redirect}/edit/${blog}/${postId}`;
+	debug( 'starting oauth process for', blog, 'will redirect to', redirect );
 	const wpoauth = wpcomOAuth( settings.client_id, { blog, redirect } );
-	wpoauth.get();
+	wpoauth.request();
 }
