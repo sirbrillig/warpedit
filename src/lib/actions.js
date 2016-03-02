@@ -18,17 +18,20 @@ export function fetchInitialMarkup( authToken, site, postId ) {
 		.then( ( response ) => {
 			debug( 'got post data response', response.slug );
 			dispatch( savePostContent( response.content, response.slug ) );
+			// TODO: use functions specifically made for this (wpreview)
 			const endpoint = `/sites/${site}/previews/mine?path=${response.slug}/`;
 			return wpcom.req.get( endpoint );
 		} )
 		.then( ( response ) => {
 			debug( 'got initial markup response' );
 			if ( ! response.html ) {
+				//TODO: throw Error object
 				throw 'No markup received from API';
 			}
 			dispatch( saveInitialMarkup( authToken, site, postId, response.html ) );
 		} )
 		.catch( () => {
+			//TODO: throw Error object
 			throw 'Error fetching markup from API';
 		} );
 	}
@@ -69,6 +72,7 @@ export function uploadComplete() {
 }
 
 export function saveChanges() {
+	// TODO: applyChangesToContent is not necessary since the content will be updated already.
 	return function( dispatch, getState ) {
 		const { auth, site, postId, markup, postContent, editableSelector } = getState();
 		const authToken = auth[ site ];
