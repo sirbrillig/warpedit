@@ -72,7 +72,8 @@ export function uploadComplete() {
 }
 
 export function saveChanges() {
-	// TODO: applyChangesToContent is not necessary since the content will be updated already.
+	// TODO: applyChangesToContent will use the most recent content for each
+	// element to update the markup by unique id
 	return function( dispatch, getState ) {
 		const { auth, site, postId, markup, postContent, editableSelector } = getState();
 		const authToken = auth[ site ];

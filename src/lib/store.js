@@ -4,8 +4,6 @@ import thunk from 'redux-thunk';
 import debugFactory from 'debug';
 import cheerio from 'cheerio';
 
-import { getElementKey } from '../lib/elements';
-
 const debug = debugFactory( 'warpedit:store' );
 
 const initialState = {
@@ -49,14 +47,14 @@ export default createStoreWithMiddleware( ( state = initialState, action ) => {
 			debug( 'applying changes to element', state.editingKey );
 			const findInPage = cheerio.load( state.markup );
 			findInPage( `[data-preview-id='${state.editingKey}']` ).html( state.editingContent );
-			//TODO: also update markup in the same way
+			//TODO: save the new markup as data by key in the store
 			return Object.assign( {}, state, { isEditorActive: false, editingKey: '', editingContent: '', markup: findInPage.html() } );
 			break;
 
 		case 'POST_CONTENT_RECEIVED':
 			debug( 'post content changed' );
-			// TODO: call addElementKeysToMarkup on this markup as well
-			return Object.assign( {}, state, { postContent: action.markup, slug: action.slug } );
+			const postContent = addElementKeysToMarkup( action.markup, state.editableSelector );
+			return Object.assign( {}, state, { postContent, slug: action.slug } );
 			break;
 
 		case 'INITIAL_MARKUP_RECEIVED':
@@ -77,10 +75,9 @@ export default createStoreWithMiddleware( ( state = initialState, action ) => {
 
 // TODO: move to content.js
 function addElementKeysToMarkup( markup, editableSelector ) {
-	// TODO: use order of elements as key
 	const findInNewPage = cheerio.load( markup );
-	findInNewPage( editableSelector ).toArray().forEach( ( element ) => {
-		const elementKey = getElementKey( cheerio( element ).html() );
+	findInNewPage( editableSelector ).toArray().forEach( ( element, index ) => {
+		const elementKey = `warpedit-editable-id-${index}`;
 		debug( `adding preview-id to element ${elementKey}` );
 		cheerio( element ).attr( 'data-preview-id', elementKey );
 	} );

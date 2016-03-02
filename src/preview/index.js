@@ -5,7 +5,7 @@ import cheerio from 'cheerio';
 
 const debug = debugFactory( 'warpedit:preview' );
 
-// Each clickable DOM element in the preview keyed by the result of getElementKey
+// Each clickable DOM element in the preview keyed by its order in the document
 let clickableElements = {};
 
 export default React.createClass( {
