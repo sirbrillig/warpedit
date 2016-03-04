@@ -9,7 +9,7 @@ const debug = debugFactory( 'warpedit:store' );
 
 const createStoreWithMiddleware = compose(
   applyMiddleware( thunk ),
-  applyMiddleware( Debug( debug ) ),
+  applyMiddleware( Debug( debug, { collapsed: true } ) ),
   persistState( [ 'auth' ], { key: 'warpedit' } )
 )( createStore );
 

@@ -109,18 +109,20 @@ export function uploadComplete() {
 
 export function saveChanges() {
 	return function( dispatch, getState ) {
-		const { auth, site, postId, markup, postContent, editableSelector } = getState();
-		const authToken = auth[ site ];
+		const { auth, post } = getState();
+		const authToken = auth[ post.site ];
 		const wpcom = wpcomFactory( authToken );
-		const post = wpcom.site( site ).post( postId );
-		const content = applyChangesToContent( postContent, markup, editableSelector );
-		post.update( { content } )
+		const wpcomPost = wpcom.site( post.site ).post( post.postId );
+		const content = applyChangesToContent( post.postContent, post.markup, post.editableSelector );
+		if ( ! content ) {
+			throw new Error( 'Could not save empty markup to API' );
+		}
+		wpcomPost.update( { content } )
 		.then( () => {
 			dispatch( uploadComplete() );
 		} )
 		.catch( () => {
-			//TODO: throw an Error object
-			throw 'Error saving markup to API';
+			throw new Error( 'Error saving markup to API' );
 		} );
 	}
 }
