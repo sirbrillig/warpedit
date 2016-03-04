@@ -20,16 +20,16 @@ export function fetchInitialMarkup( site, postId ) {
 		wpcom.site( site ).post( postId ).get( { context: 'edit' } )
 		.then( response => {
 			debug( 'got post data response with slug', response.slug );
-			dispatch( gotPostContent( response.content ) );
+			dispatch( gotPostContent( response.content, response.slug ) );
 		} )
 		.catch( () => dispatch( gotError ) );
 	}
 }
 
-export function gotPostContent( markup ) {
+export function gotPostContent( markup, slug ) {
 	return function( dispatch, getState ) {
 		const { post } = getState();
-		dispatch( savePostContent( addElementKeysToMarkup( markup, post.editableSelector ) ) );
+		dispatch( savePostContent( addElementKeysToMarkup( markup, post.editableSelector ), slug ) );
 		dispatch( fetchPreview( post.site, post.postId ) );
 	}
 }
@@ -52,8 +52,8 @@ export function fetchPreview( site, postId ) {
 	}
 }
 
-export function savePostContent( markup ) {
-	return { type: 'POST_CONTENT_RECEIVED', markup };
+export function savePostContent( markup, slug ) {
+	return { type: 'POST_CONTENT_RECEIVED', markup, slug };
 }
 
 export function saveInitialMarkup( markup ) {
@@ -137,8 +137,8 @@ export function gotSiteAndPost( site, postId ) {
 
 export function viewPost() {
 	return function( dispatch, getState ) {
-		const { site, slug } = getState();
-		openInNewWindow( `http://${site}/${slug}/` );
+		const { post } = getState();
+		openInNewWindow( `http://${post.site}/${post.slug}/` );
 	}
 }
 
