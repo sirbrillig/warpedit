@@ -3,22 +3,25 @@ import debugFactory from 'debug';
 import querystring from 'querystring';
 import { connect } from 'react-redux';
 
-import Preview from './preview';
-import EditorPanel from './editor-panel';
-import MenuBar from './menu-bar';
-import { fetchInitialMarkup, getAuth, changeElement, editElement } from './lib/actions';
-import { saveChanges, finishEditing, viewPost } from './lib/actions';
+import NoPost from './no-post';
+import Loading from './loading';
+import LoggedIn from './logged-in';
+import { fetchInitialMarkup, getAuth } from './lib/actions';
 
 const debug = debugFactory( 'warpedit:warpedit' );
 
 const Warpedit = React.createClass( {
-	displayName: 'Warpedit',
+	propTypes: {
+		markup: React.PropTypes.string,
+		auth: React.PropTypes.object,
+		params: React.PropTypes.object,
+		dispatch: React.PropTypes.func,
+		location: React.PropTypes.object,
+	},
 
 	componentDidMount() {
 		this.callInitialActions( this.props );
 	},
-
-	// TODO: add propTypes
 
 	callInitialActions( newProps ) {
 		// when we first mount, we should do the following:
@@ -42,70 +45,15 @@ const Warpedit = React.createClass( {
 	},
 
 	render() {
-		if ( ! this.props.params.site || ! this.props.params.post ) {
-			return (
-				<div>
-					<h2>No site specified</h2>
-					<h3>Please visit `/edit/SITE/POST_ID`</h3>
-				</div>
-			);
-		}
-		if ( this.props.markup.length < 1 ) {
-			return (
-				<div>
-					<h2>Loading...</h2>
-				</div>
-			);
-		}
-		return (
-			<div>
-				<MenuBar
-					isEditorActive={ this.props.isEditorActive }
-					standardButtons={ [
-						<button key="saveChanges" className="btn" onClick={ this.handleSave }>Save Changes</button>,
-						<button key="viewPost" className="btn" onClick={ this.viewPost }>View Post</button>,
-					] }
-					editorButtons={ [
-						<button key="doneEditing" className="btn" onClick={ this.handleDoneEditing }>Done</button>
-					] }
-				/>
-				<EditorPanel
-					active={ this.props.isEditorActive }
-					content={ this.props.editingContent }
-					onChange={ this.handleEditChange }
-				/>
-				<Preview
-					markup={ this.props.markup }
-					onClick={ this.handleClickElement }
-				/>
-			</div>
-		);
+		if ( ! this.props.params.site || ! this.props.params.post ) return <NoPost />;
+		if ( this.props.markup.length < 1 ) return <Loading />;
+		return <LoggedIn />
 	},
-
-	handleDoneEditing() {
-		this.props.dispatch( finishEditing() );
-	},
-
-	handleSave() {
-		this.props.dispatch( saveChanges() );
-	},
-
-	viewPost() {
-		this.props.dispatch( viewPost() );
-	},
-
-	handleEditChange( content ) {
-		this.props.dispatch( changeElement( content ) );
-	},
-
-	handleClickElement( elementKey ) {
-		this.props.dispatch( editElement( elementKey ) );
-	}
 } );
 
 function mapStateToProps( state ) {
-	const { isEditorActive, editingContent, markup, auth } = state;
-	return { isEditorActive, editingContent, markup, auth };
+	const { markup, auth } = state;
+	return { markup, auth };
 }
 
 export default connect( mapStateToProps )( Warpedit );

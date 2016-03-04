@@ -8,9 +8,9 @@ export function applyChangesToContent( postContent, newMarkup, editableSelector 
 	const findInNewPage = cheerio.load( newMarkup );
 	const findInOldPage = cheerio.load( postContent );
 	findInOldPage( editableSelector ).toArray().forEach( ( element ) => {
-		const elementKey = cheerio( element ).data( 'data-preview-id' );
+		const elementKey = element.data( 'data-preview-id' );
 		// TODO: skip if key not found
-		debug( `applying changes to element ${elementKey}` );
+		debug( `applying changes to element ${elementKey}`, element );
 		const newElementMarkup = findInNewPage( `[data-preview-id='${elementKey}']` ).html();
 		// TODO: skip if markup not found
 		cheerio( element ).html( newElementMarkup );

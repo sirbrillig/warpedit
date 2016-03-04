@@ -72,8 +72,6 @@ export function uploadComplete() {
 }
 
 export function saveChanges() {
-	// TODO: applyChangesToContent will use the most recent content for each
-	// element to update the markup by unique id
 	return function( dispatch, getState ) {
 		const { auth, site, postId, markup, postContent, editableSelector } = getState();
 		const authToken = auth[ site ];
@@ -85,6 +83,7 @@ export function saveChanges() {
 			dispatch( uploadComplete() );
 		} )
 		.catch( () => {
+			//TODO: throw an Error object
 			throw 'Error saving markup to API';
 		} );
 	}
