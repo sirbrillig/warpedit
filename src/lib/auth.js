@@ -1,4 +1,5 @@
 import debugFactory from 'debug';
+import { browserHistory } from 'react-router';
 import wpcomOAuth from 'wpcom-oauth-cors';
 
 const debug = debugFactory( 'warpedit:auth' );
@@ -18,4 +19,11 @@ export function getAuthFromServer( blog, postId ) {
 	debug( 'starting oauth process for', blog, 'will redirect to', redirect );
 	const wpoauth = wpcomOAuth( settings.client_id, { blog, redirect } );
 	wpoauth.request();
+}
+
+export function removeTokenFromUrl() {
+	if ( ! window ) return;
+	const newUrl = window.location.pathname;
+	debug( 'replacing history location with', newUrl );
+	browserHistory.replace( newUrl );
 }

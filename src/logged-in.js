@@ -63,8 +63,8 @@ const LoggedIn = React.createClass( {
 } );
 
 function mapStateToProps( state ) {
-	const { isEditorActive, editingContent, markup } = state;
-	return { isEditorActive, editingContent, markup };
+	const { ui, editor, post } = state;
+	return { isEditorActive: ui.isEditorActive, editingContent: editor.editingContent, markup: post.markup };
 }
 
 export default connect( mapStateToProps )( LoggedIn );
