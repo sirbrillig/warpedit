@@ -1,6 +1,6 @@
 import wpcomFactory from 'wpcom';
 import debugFactory from 'debug';
-import { getPreviewForPost } from 'wpreview';
+import { getPreviewForSlug } from 'wpreview';
 
 import { getAuthFromServer } from '../lib/auth';
 import { getElementMarkupForKey, updateElementInMarkup, addElementKeysToMarkup, applyChangesToContent } from '../lib/content';
@@ -8,6 +8,7 @@ import { getElementMarkupForKey, updateElementInMarkup, addElementKeysToMarkup, 
 const debug = debugFactory( 'warpedit:actions' );
 
 export function gotError( error ) {
+	debug( 'got error', error );
 	return { type: 'ERROR', error: error.toString() };
 }
 
@@ -22,7 +23,7 @@ export function fetchInitialMarkup( site, postId ) {
 			debug( 'got post data response with slug', response.slug );
 			dispatch( gotPostContent( response.content, response.slug ) );
 		} )
-		.catch( () => dispatch( gotError ) );
+		.catch( err => dispatch( gotError( err ) ) );
 	}
 }
 
@@ -30,17 +31,17 @@ export function gotPostContent( markup, slug ) {
 	return function( dispatch, getState ) {
 		const { post } = getState();
 		dispatch( savePostContent( addElementKeysToMarkup( markup, post.editableSelector ), slug ) );
-		dispatch( fetchPreview( post.site, post.postId ) );
+		dispatch( fetchPreview( post.site, slug ) );
 	}
 }
 
-export function fetchPreview( site, postId ) {
+export function fetchPreview( site, slug ) {
 	return function( dispatch, getState ) {
 		debug( 'fetching preview' );
 		const { auth, post } = getState();
 		const authToken = auth[ site ];
 		const wpcom = wpcomFactory( authToken );
-		getPreviewForPost( wpcom, site, postId )
+		getPreviewForSlug( wpcom, site, slug )
 		.then( response => {
 			debug( 'got initial markup response' );
 			if ( ! response ) {
@@ -48,7 +49,7 @@ export function fetchPreview( site, postId ) {
 			}
 			dispatch( saveInitialMarkup( addElementKeysToMarkup( response, post.editableSelector ) ) );
 		} )
-		.catch( () => dispatch( gotError ) );
+		.catch( err => dispatch( gotError( err ) ) );
 	}
 }
 
