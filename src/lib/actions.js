@@ -3,7 +3,7 @@ import debugFactory from 'debug';
 import { getPreviewForSlug } from 'wpreview';
 
 import { getAuthFromServer } from '../lib/auth';
-import { getElementMarkupForKey, updateElementInMarkup, addElementKeysToMarkup, applyChangesToContent } from '../lib/content';
+import { replaceNewlinesWithHtml, getElementMarkupForKey, updateElementInMarkup, addElementKeysToMarkup, applyChangesToContent } from '../lib/content';
 
 const debug = debugFactory( 'warpedit:actions' );
 
@@ -90,7 +90,8 @@ export function changeElement( content ) {
 export function finishEditing() {
 	return function( dispatch, getState ) {
 		const { post, editor } = getState();
-		const newMarkup = updateElementInMarkup( editor.editingKey, editor.editingContent, post.markup );
+		const editingContent = replaceNewlinesWithHtml( editor.editingContent );
+		const newMarkup = updateElementInMarkup( editor.editingKey, editingContent, post.markup );
 		dispatch( gotUpdatedMarkup( newMarkup ) );
 		dispatch( closeEditor() );
 	}

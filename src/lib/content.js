@@ -1,5 +1,6 @@
 import cheerio from 'cheerio';
 import debugFactory from 'debug';
+import autop from 'wordpress-autop';
 
 const debug = debugFactory( 'warpedit:content' );
 
@@ -44,4 +45,15 @@ export function updateElementInMarkup( key, content, markup ) {
 	const findInPage = cheerio.load( markup );
 	findInPage( `[data-preview-id='${key}']` ).html( content );
 	return findInPage.html();
+}
+
+export function replaceNewlinesWithHtml( content ) {
+	return autop( content );
+}
+
+export function stripHtmlFromContent( content ) {
+	return content
+	.replace( /<BR\s*\/?>/ig, '\n' )
+	.replace( /<\/P>/ig, '\n' )
+	.replace( /<[^>]+>/g, '' );
 }

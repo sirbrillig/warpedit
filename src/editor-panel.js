@@ -2,6 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import noop from 'lodash.noop';
+import { decode } from 'ent';
+
+import { stripHtmlFromContent } from './lib/content';
 
 export default React.createClass( {
 	displayName: 'EditorPanel',
@@ -22,12 +25,12 @@ export default React.createClass( {
 
 	getInitialState() {
 		return {
-			content: this.props.content,
+			content: stripHtmlFromContent( decode( this.props.content ) ),
 		}
 	},
 
 	componentWillReceiveProps( nextProps ) {
-		this.setState( { content: nextProps.content } );
+		this.setState( { content: stripHtmlFromContent( decode( nextProps.content ) ) } );
 	},
 
 	componentDidUpdate() {

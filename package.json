@@ -13,6 +13,7 @@
     "cheerio": "^0.19.0",
     "classnames": "^2.2.1",
     "debug": "^2.2.0",
+    "ent": "^2.2.0",
     "lodash.get": "^3.7.0",
     "lodash.noop": "^3.0.0",
     "react": "^0.14.3",
@@ -24,6 +25,7 @@
     "redux-debug": "^1.0.3",
     "redux-localstorage": "^0.4.0",
     "redux-thunk": "^1.0.2",
+    "wordpress-autop": "^1.0.2",
     "wpcom": "^4.8.3",
     "wpcom-oauth-cors": "git+ssh://git@github.com/Automattic/wpcom-oauth-cors.git"
   },
