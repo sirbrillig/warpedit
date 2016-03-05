@@ -45,3 +45,15 @@ export function updateElementInMarkup( key, content, markup ) {
 	findInPage( `[data-preview-id='${key}']` ).html( content );
 	return findInPage.html();
 }
+
+export function replaceNewlinesWithHtml( content ) {
+	return content
+	.replace( /\n/g, '<BR/>' );
+}
+
+export function stripHtmlFromContent( content ) {
+	return content
+	.replace( /<BR\s*\/?>/ig, '\n' )
+	.replace( /<\/P>/ig, '\n' )
+	.replace( /<[^>]+>/g, '' );
+}
