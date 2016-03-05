@@ -1,5 +1,6 @@
 import cheerio from 'cheerio';
 import debugFactory from 'debug';
+import autop from 'wordpress-autop';
 
 const debug = debugFactory( 'warpedit:content' );
 
@@ -47,8 +48,7 @@ export function updateElementInMarkup( key, content, markup ) {
 }
 
 export function replaceNewlinesWithHtml( content ) {
-	return content
-	.replace( /\n/g, '<BR/>' );
+	return autop( content );
 }
 
 export function stripHtmlFromContent( content ) {

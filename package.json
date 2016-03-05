@@ -25,6 +25,7 @@
     "redux-debug": "^1.0.3",
     "redux-localstorage": "^0.4.0",
     "redux-thunk": "^1.0.2",
+    "wordpress-autop": "^1.0.2",
     "wpcom": "^4.8.3",
     "wpcom-oauth-cors": "git+ssh://git@github.com/Automattic/wpcom-oauth-cors.git"
   },
